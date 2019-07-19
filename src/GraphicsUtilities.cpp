@@ -7,6 +7,11 @@ Geometry::Geometry(std::vector<float>& vertices, std::vector<float>& uvs, std::v
 	createVertexArrays(vertices, uvs, normals, indices);
 }
 
+Geometry::Geometry(std::string& geo_name, std::vector<float>& vertices, std::vector<float>& uvs, std::vector<float>& normals, std::vector<unsigned int>& indices) {
+	name = geo_name;
+	createVertexArrays(vertices, uvs, normals, indices);
+}
+
 void Geometry::render() {
 	glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, num_tris * 3, GL_UNSIGNED_INT, 0);

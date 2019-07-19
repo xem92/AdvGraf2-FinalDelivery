@@ -131,5 +131,128 @@ struct EntityComponentStore {
     }
     //stores main camera id
     int main_camera = -1;
+
+
+	void deleteEntity(string name) {
+		for (size_t i = 0; i < entities.size(); i++)
+			if (entities[i].name == name) deleteEntity((int)i);
+	}
+
+	void deleteEntity(int id) {
+
+		std::map<int, int> entity_delete_map;
+		int rest = 0;
+		for (size_t i = 0; i < entities.size(); i++) {
+			if (i == id) {
+				rest = 1;
+			}
+			else {
+				entity_delete_map[i] = i - rest;
+			}
+		}
+
+		deleteComponentTransform(id, entity_delete_map);
+		deleteComponent<Light>(id, entity_delete_map);
+		deleteComponent<Collider>(id, entity_delete_map);
+		deleteComponent<Camera>(id, entity_delete_map);
+		deleteComponent<GUIElement>(id, entity_delete_map);
+		deleteComponent<GUIText>(id, entity_delete_map);
+		deleteComponent<Mesh>(id, entity_delete_map);
+		deleteComponent<Animation>(id, entity_delete_map);
+		deleteComponent<SkinnedMesh>(id, entity_delete_map);
+		deleteComponent<BlendShapes>(id, entity_delete_map);
+		rest = 0;
+		for (size_t i = 0; i < entities.size(); i++) {
+			if (i == id) {
+				rest = 1;
+			}
+			else {
+				entities[i - rest] = entities[i];
+			}
+		}
+		entities.pop_back();
+	}
+
+
+	void deleteComponentTransform(int entity_id, std::map<int, int> entity_delete_map) {
+		int rest = 0;
+		auto& components = getAllComponents<Transform>();
+		if (getComponentID<Transform>(entity_id) == -1) {
+			for (size_t i = 0; i < components.size(); i++) {
+				components[i].owner = entity_delete_map[components[i].owner];
+			}
+			return;
+		}
+		std::map<int, int> transfor_delete_map;
+
+		int entity_transform_id = -1;
+		int entity_transform_parent = -1;
+		for (size_t i = 0; i < components.size(); i++) {
+			if (components[i].owner == entity_id) {
+				rest = 1;
+				entity_transform_id = components[i].index;
+				entity_transform_parent = components[i].parent;
+			}
+			else {
+				components[i - rest] = components[i];
+				components[i - rest].index = i - rest;
+				transfor_delete_map[i] = i - rest;
+				const int type_index = type2int<Transform>::result;
+				entities[components[i - rest].owner].components[type_index] = i - rest;
+				components[i - rest].owner = transfor_delete_map[components[i - rest].owner];
+
+				if (components[i - rest].parent != -1) {
+					if (components[i - rest].parent != entity_transform_id) {
+						components[i - rest].parent = transfor_delete_map[components[i - rest].parent];
+					}
+					else {
+						components[i - rest].parent = entity_transform_parent;
+					}
+				}
+			}
+		}
+		components.pop_back();
+	}
+
+	template<typename T>
+	void deleteComponent(int entity_id, std::map<int, int> entity_delete_map) {
+		int rest = 0;
+		auto& components = getAllComponents<T>();
+		if (getComponentID<T>(entity_id) == -1) {
+			for (size_t i = 0; i < components.size(); i++) {
+				components[i].owner = entity_delete_map[components[i].owner];
+			}
+			return;
+		}
+		for (size_t i = 0; i < components.size(); i++) {
+			if (components[i].owner == entity_id) {
+				rest = 1;
+			}
+			else {
+				components[i - rest] = components[i];
+				components[i - rest].index = i - rest;
+				const int type_index = type2int<T>::result;
+				entities[components[i - rest].owner].components[type_index] = i - rest;
+				components[i - rest].owner = entity_delete_map[components[i - rest].owner];
+			}
+		}
+		components.pop_back();
+	}
+
+	template<typename T>
+	void deleteComponent(int entity_id) {
+		std::map<int, int> entity_delete_map;
+		int rest = 0;
+		for (size_t i = 0; i < entities.size(); i++) {
+			if (i == entity_id) {
+				rest = 1;
+			}
+			else {
+				entity_delete_map[i] = i - rest;
+			}
+		}
+
+		deleteComponent<T>(entity_id, entity_delete_map);
+	}
     
 };

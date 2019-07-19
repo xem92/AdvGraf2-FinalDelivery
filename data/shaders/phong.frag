@@ -234,5 +234,5 @@ void main(){
         transparency = texture(u_transparency_map, s_uv).x;
     
     //fragColor = vec4(texture(u_normal_map, s_uv).xyz, 1.0);
-    fragColor = vec4(final_color, transparency);
+    fragColor = vec4(final_color, 1.0);
 }

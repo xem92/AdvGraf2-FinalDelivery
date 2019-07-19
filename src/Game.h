@@ -32,14 +32,40 @@ public:
 			gui_system_.updateMousePosition(new_x, new_y);
 		}
 	}
+
 	void key_callback(int key, int scancode, int action, int mods) {
 
 		if (key == GLFW_KEY_0 && action == GLFW_PRESS && mods == GLFW_MOD_ALT)
 			debug_system_.toggleimGUI();
 
+		if (key == GLFW_KEY_4 && action == GLFW_PRESS && mods == GLFW_MOD_ALT)
+			debug_system_.toggleprotoGUI();
+
+		if (key == GLFW_KEY_1 && action == GLFW_PRESS && mods == GLFW_MOD_ALT)
+			debug_system_.toggleentitiesGUI();
+
+		if (key == GLFW_KEY_2 && action == GLFW_PRESS && mods == GLFW_MOD_ALT)
+			debug_system_.togglematerialsGUI();
+
+		if (key == GLFW_KEY_3 && action == GLFW_PRESS && mods == GLFW_MOD_ALT)
+			debug_system_.toggleconsoleGUI();
+
 		if (!debug_system_.isShowGUI())
 			control_system_.key_mouse_callback(key, action, mods);
+
+		if (!debug_system_.isShowProtoGUI())
+			control_system_.key_mouse_callback(key, action, mods);
+
+		if (!debug_system_.isShowEntitiesGUI())
+			control_system_.key_mouse_callback(key, action, mods);
+
+		if (!debug_system_.isShowMaterialsGUI())
+			control_system_.key_mouse_callback(key, action, mods);
+
+		if (!debug_system_.isShowConsoleGUI())
+			control_system_.key_mouse_callback(key, action, mods);
 	}
+
 	void mouse_button_callback(int button, int action, int mods) {
 		if (!debug_system_.isShowGUI()) {
 			control_system_.key_mouse_callback(button, action, mods);
@@ -48,24 +74,26 @@ public:
 		else
 			debug_system_.setPickingRay(mouse_x_, mouse_y_, window_width_, window_height_);
 	}
+
 	void update_viewports(int window_width, int window_height);
+
 
 private:
 	GraphicsSystem graphics_system_;
 	ControlSystem control_system_;
-    DebugSystem debug_system_;
-    CollisionSystem collision_system_;
-    ScriptSystem script_system_;
+	DebugSystem debug_system_;
+	CollisionSystem collision_system_;
+	ScriptSystem script_system_;
 	GUISystem gui_system_;
-    AnimationSystem animation_system_;
-    //ParticleSystem particle_system_;
-    
-    //particles
-    ParticleEmitter* particle_emitter_;
+	AnimationSystem animation_system_;
+	//ParticleSystem particle_system_;
+
+	//particles
+	ParticleEmitter* particle_emitter_;
 
 	int createFreeCamera_(float, float, float, float, float, float);
 	int createPlayer_(float aspect, ControlSystem& sys);
-    Material& createMaterial(GLuint shader_program);
+	Material& createMaterial(GLuint shader_program);
 
 	int window_width_;
 	int window_height_;

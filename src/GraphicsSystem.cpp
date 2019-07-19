@@ -753,7 +753,7 @@ int GraphicsSystem::createGeometryFromFile(std::string filename) {
         if (Parsers::parseOBJ(filename, vertices, uvs, normals, indices)) {
         
             //generate the OpenGL buffers and create geometry
-			Geometry new_geom(vertices, uvs, normals, indices);
+			Geometry new_geom(filename, vertices, uvs, normals, indices);
             geometries_.emplace_back(new_geom);
 
             return (int)geometries_.size() - 1;

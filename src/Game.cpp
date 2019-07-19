@@ -31,13 +31,64 @@ void Game::init(int w, int h) {
     graphics_system_.screen_background_color = lm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
     createFreeCamera_(13.614, 16, 32, -0.466, -0.67, -0.579);
     
-    
-    
-    
-    particle_emitter_ = new ParticleEmitter();
-    particle_emitter_->init();
+	Shader* phong_shader = graphics_system_.loadShader("data/shaders/phong.vert", "data/shaders/phong.frag");
+	//int sphere_geom = graphics_system_.createGeometryFromFile("data/assets/sphere.obj");
+	int floor_geom = graphics_system_.createGeometryFromFile("data/assets/floor_40x40.obj");
 
+	int mat_red_check_index = graphics_system_.createMaterial();
+	Material& mat_red_check = graphics_system_.getMaterial(mat_red_check_index);
+	mat_red_check.shader_id = phong_shader->program;
+	mat_red_check.name = "Mat red";
+	mat_red_check.ambient = lm::vec3(1.0f, 1.0f, 1.0f);
+	mat_red_check.diffuse = lm::vec3(1.0f, 0.0f, 0.0f);
+	mat_red_check.specular = lm::vec3(0, 0, 0);
 
+	int mat_green_check_index = graphics_system_.createMaterial();
+	Material& mat_green_check = graphics_system_.getMaterial(mat_green_check_index);
+	mat_green_check.shader_id = phong_shader->program;
+	mat_green_check.name = "Mat green";
+	mat_green_check.ambient = lm::vec3(1.0f, 1.0f, 1.0f);
+	mat_green_check.diffuse = lm::vec3(0.0f, 1.0f, 0.0f);
+	mat_green_check.specular = lm::vec3(0, 0, 0);
+
+	int mat_blue_check_index = graphics_system_.createMaterial();
+	Material& mat_blue_check = graphics_system_.getMaterial(mat_blue_check_index);
+	mat_blue_check.shader_id = phong_shader->program;
+	mat_blue_check.name = "Mat blue";
+	mat_blue_check.diffuse_map = Parsers::parseTexture("data/assets/block_blue.tga");
+	mat_blue_check.specular = lm::vec3(0, 0, 0);
+
+	int sphere_entity = ECS.createEntity("phong_sphere");
+	Transform& st = ECS.getComponentFromEntity<Transform>(sphere_entity);
+	st.translate(0.0f, 0.0f, 0.0f);
+	Mesh& sphere_mesh = ECS.createComponentForEntity<Mesh>(sphere_entity);
+	sphere_mesh.geometry = graphics_system_.sphere_volume_geom_;
+	sphere_mesh.material = mat_red_check_index;
+	sphere_mesh.render_mode = RenderModeForward;
+
+	int sphere_entity2 = ECS.createEntity("phong_sphere2");
+	Transform& st2 = ECS.getComponentFromEntity<Transform>(sphere_entity2);
+	st2.translate(0.0f, 5.0f, 0.0f);
+	Mesh& sphere_mesh2 = ECS.createComponentForEntity<Mesh>(sphere_entity2);
+	sphere_mesh2.geometry = graphics_system_.sphere_volume_geom_;
+	sphere_mesh2.material = mat_green_check_index;
+	sphere_mesh2.render_mode = RenderModeForward;
+
+	int ent_light_dir = ECS.createEntity("light_dir");
+	ECS.getComponentFromEntity<Transform>(ent_light_dir).translate(5, 9, 10);
+	Light& light_comp_dir = ECS.createComponentForEntity<Light>(ent_light_dir);
+	light_comp_dir.color = lm::vec3(0.99f, 0.99f, 0.99f);
+	light_comp_dir.direction = lm::vec3(-0.5, -0.5, -0.5);
+	light_comp_dir.type = LightTypeSpot; //change for direction or spot
+	light_comp_dir.linear_att = 0.027f;
+	light_comp_dir.quadratic_att = 0.0028f;
+	light_comp_dir.spot_inner = 50.0f;
+	light_comp_dir.spot_inner = 60.0f;
+	light_comp_dir.position = lm::vec3(5, 9, 10);
+	light_comp_dir.forward = light_comp_dir.direction.normalize();
+	light_comp_dir.setPerspective(60 * DEG2RAD, 1, 5, 50);
+	light_comp_dir.update();
+	light_comp_dir.cast_shadow = true;
 
     //******* LATE INIT AFTER LOADING RESOURCES *******//
     graphics_system_.lateInit();
@@ -70,7 +121,7 @@ void Game::update(float dt) {
 	graphics_system_.update(dt);
     
     //particles
-    particle_emitter_->update();
+    //particle_emitter_->update();
     
 	//gui
 	gui_system_.update(dt);

@@ -46,7 +46,9 @@ public:
 
 	//lights update
 	bool needUpdateLights = true;
-    
+
+	int sphere_volume_geom_;
+
 private:
     //resources
     std::string assets_folder_;
@@ -102,7 +104,6 @@ private:
     Framebuffer gbuffer_;
     void renderGbuffer();
     void renderLightVolumes();
-    int sphere_volume_geom_;
     int cone_volume_geom_;
     
     //cubemap/environment

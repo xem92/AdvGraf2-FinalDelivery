@@ -32,6 +32,7 @@ struct Geometry {
     Geometry() { vao = 0; num_tris = 0; }
     Geometry(int a_vao, int a_tris) : vao(a_vao), num_tris(a_tris) {}
     Geometry(std::vector<float>& vertices, std::vector<float>& uvs, std::vector<float>& normals, std::vector<unsigned int>& indices);
+    Geometry(std::string& geo_name, std::vector<float>& vertices, std::vector<float>& uvs, std::vector<float>& normals, std::vector<unsigned int>& indices);
     
     //core variables
 	GLuint vao;
@@ -64,6 +65,8 @@ struct Geometry {
     int addBlendShape(std::vector<float>& blend_offsets);
     std::vector<float> blend_weights;
 
+	// name
+	std::string name = "";
 };
 
 struct Material {
